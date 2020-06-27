@@ -7,6 +7,8 @@ import gspread
 import feedparser
 from google_alerts import GoogleAlerts
 
+print('File started')
+
 gc = gspread.service_account('./service_credentials.json')
 sheet = gc.open_by_key(os.getenv("SHEET_ID"))
 
