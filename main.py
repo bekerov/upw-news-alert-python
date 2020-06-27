@@ -10,7 +10,7 @@ from google_alerts import GoogleAlerts
 print('File started')
 
 with open('./service_credentials.json', 'w') as file:
-    file.write(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
+    file.write(os.getenv('GOOGLE_SERVICE_CREDENTIALS'))
 
 gc = gspread.service_account('./service_credentials.json')
 sheet = gc.open_by_key(os.getenv("SHEET_ID"))
