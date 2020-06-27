@@ -15,10 +15,8 @@ with open('./service_credentials.json', 'w') as file:
 gc = gspread.service_account('./service_credentials.json')
 sheet = gc.open_by_key(os.getenv("SHEET_ID"))
 
-s = sched.scheduler(time.time, time.sleep)
-
-
-def load_news(sc):
+while True:
+    print('started loop', time.time())
     news_sheet = sheet.get_worksheet(0)
 
     companies_sheet = sheet.get_worksheet(1)
@@ -53,8 +51,6 @@ def load_news(sc):
                 print('added new item with id ' + item['id'])
                 news_sheet.append_row([item['id'], item['title'], item['link'], item['published'], company_name, crm_id])
 
-    s.enter(60, 1, load_news, (sc,))
+    time.sleep(120)
 
 
-s.enter(60, 1, load_news, (s,))
-s.run()
