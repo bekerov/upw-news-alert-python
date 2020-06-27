@@ -1,5 +1,5 @@
 import os
-import sched, time
+import time
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -15,7 +15,13 @@ with open('./service_credentials.json', 'w') as file:
 gc = gspread.service_account('./service_credentials.json')
 sheet = gc.open_by_key(os.getenv("SHEET_ID"))
 
-while True:
+
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+sched = BlockingScheduler()
+
+@sched.scheduled_job('interval', minutes=3)
+def timed_job():
     print('started loop', time.time())
     news_sheet = sheet.get_worksheet(0)
 
@@ -49,8 +55,7 @@ while True:
         for item in feed['entries']:
             if item['id'] not in news_ids:
                 print('added new item with id ' + item['id'])
-                news_sheet.append_row([item['id'], item['title'], item['link'], item['published'], company_name, crm_id])
+                news_sheet.append_row(
+                    [item['id'], item['title'], item['link'], item['published'], company_name, crm_id])
 
-    time.sleep(120)
-
-
+sched.start()
