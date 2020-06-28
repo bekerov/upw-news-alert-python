@@ -5,9 +5,6 @@ load_dotenv()
 
 import gspread
 import feedparser
-from google_alerts import GoogleAlerts
-
-print('File started')
 
 with open('./service_credentials.json', 'w') as file:
     file.write(os.getenv('GOOGLE_SERVICE_CREDENTIALS'))
@@ -20,7 +17,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-@sched.scheduled_job('interval', minutes=3)
+@sched.scheduled_job('interval', minutes=1)
 def timed_job():
     print('started loop', time.time())
     news_sheet = sheet.get_worksheet(0)
@@ -39,14 +36,9 @@ def timed_job():
             dict[list_of_lists[0][idx]] = value
         table_data.append(dict)
 
-    ga = GoogleAlerts(os.getenv("GOOGLE_EMAIL"), os.getenv("GOOGLE_PASSWORD"))
-    ga.authenticate()
-
-    alerts_list = ga.list()
-
-    for alert_item in alerts_list:
+    for alert_item in table_data:
         rss_link = alert_item['rss_link']
-        company_name = alert_item['term']
+        company_name = alert_item['company_name']
 
         crm_id = list(filter(lambda d: d['company_name'].lower() == company_name.lower(), table_data))[0]['crm_id']
 
